@@ -1,0 +1,26 @@
+{
+  "name": "pushlogin",
+  "description": "Login server and UI client",
+  "main": "server.js",
+  "authors": [
+    "Bibin"
+  ],
+  "license": "ISC",
+  "moduleType": [],
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "1.5",
+    "angular-svg-round-progressbar": "~0.4.7",
+    "bootstrap": "~3.3.7",
+    "angular-route": "1.5",
+    "font-awesome": "~4.6.3"
+  }
+}

@@ -3,80 +3,48 @@
 
   angular
     .module('app')
-    .controller('MainCtrl', MainCtrl);
+    .controller('LoginCtrl', LoginCtrl);
 
-  MainCtrl.$inject = ['$scope', '$localStorage', 'socket', 'lodash'];
+  LoginCtrl.$inject = ['$scope','socket','$timeout'];
 
-  function MainCtrl($scope, $localStorage, socket, lodash) {
-    $scope.message = '';
-    $scope.users = [];
-    $scope.messages = [];
-    $scope.likes = [];
-    $scope.mynickname = $localStorage.nickname;
-    var nickname = $scope.mynickname;
 
-     $scope.joinPrivate = function() {
-      socket.emit('join-private', {
-        nickname: nickname
-      });
-      console.log('private room joined!');
-    }
 
-    $scope.groupPm = function() {
-      socket.emit('private-chat', {
-        message: 'hello everybody!'
-      });
-    }
+  function LoginCtrl($scope,  socket, $timeout) {
 
-    socket.on('show-message', function(data) {
-      console.log(data);
-    });
+    $scope.timer ={max:30,enabled:false};
 
-    socket.emit('get-users');
+    $scope.pushEnabled=false;
 
-    $scope.sendMessage = function(data) {
-      var newMessage = {
-        message: $scope.message,
-        from: nickname
-      }
-      socket.emit('send-message', newMessage);
-      // $scope.messages.push(newMessage);
-      $scope.message = '';
+
+    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    $scope.isValidEmail =function() {
+      return re.test($scope.email);
     };
 
-    $scope.sendLike = function(user) {
-      console.log(user);
-      var id = lodash.get(user, 'socketid');
-      var likeObj = {
-        from: nickname,
-        like: id
-      }
-      socket.emit('send-like', likeObj);
+    $scope.activatePush = function(){
+      $scope.pushEnabled =true;
+      $scope.timer.enabled=true;
+      $scope.timer.current=0;
+      $scope.waitForAction();
     }
 
-    socket.on('all-users', function(data) {
-      console.log(data);
-      $scope.users = data.filter(function(item) {
-        return item.nickname !== nickname;
-      });
-    });
+    $scope.cancelPush = function(){
+      $scope.pushEnabled =false;
+      $scope.timer.enabled=false;
+      $scope.timer.current=0;
+    }
 
-    socket.on('user-liked', function(data) {
-      console.log(data);
-      console.log(data.from);
-      $scope.likes.push(data.from);
-    });
+    var timer;
+    $scope.waitForAction = function(){
+      if($scope.timer.current==$scope.timer.max){
+        $timeout.cancel(timer);
+        return;
+      }
+      $scope.timer.current++;
+      timer = $timeout($scope.waitForAction, 1000)
+    }
 
-    socket.on('message-received', function(data) {
-      $scope.messages.push(data);
-    });
-
-    socket.on('update', function(data) {
-      $scope.users = [];
-      $scope.users = data.filter(function(item) {
-        return item.nickname !== nickname;
-      });
-    });
+ 
 
   };
 })();

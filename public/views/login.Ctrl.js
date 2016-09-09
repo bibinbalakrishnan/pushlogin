@@ -26,12 +26,20 @@
       $scope.timer.enabled=true;
       $scope.timer.current=0;
       $scope.waitForAction();
+      socket.emit('join', {
+        type: 'requester',
+        name: $scope.email
+      });
     }
 
     $scope.cancelPush = function(){
       $scope.pushEnabled =false;
       $scope.timer.enabled=false;
       $scope.timer.current=0;
+      socket.emit('cancel', {
+        type: 'requester',
+        name: $scope.email
+      });
     }
 
     var timer;

@@ -28,3 +28,28 @@ apiRouter.route('/history')
 io.on('connection', function (socket) {
   console.log('Detected a socket connection');
 });
+
+
+
+/**
+ * 
+ * 
+function Sessions(){
+    this.contexts =[];
+    //userid : {requester : {id: id, socket : socket}, activator :{id: id, socket: socket}, active: true, tick :20}
+}
+Sessions.prototype.register = function(data,socket){
+    console.log('New '+data.type+' joined '+data.name);
+};
+
+Sessions.prototype.remove = function(data){
+    console.log(data.type +' for '+ data.name +' cancelled');
+};
+
+
+Sessions.prototype.getTick = function(){
+
+};
+
+module.exports = Sessions;
+ * 

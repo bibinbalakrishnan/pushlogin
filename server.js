@@ -1,9 +1,11 @@
 
 var express = require('express');
 var path = require('path');
+var _ = require('lodash');
 var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
+var _sessions = new (require('./sessions.js'));
 
 server.listen(8000,function(){
 	console.log('Listening on port 8000');

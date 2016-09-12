@@ -24,31 +24,40 @@
     $scope.activatePush = function(){
       $scope.pushEnabled =true;
       $scope.timer.enabled=true;
-      $scope.timer.current=0;
+      $scope.timer.current=30;
       $scope.waitForAction();
       socket.emit('join', {
         type: 'requester',
-        name: $scope.email
+        name: 'bibin@gmail.com'//$scope.email
       });
     }
 
-    $scope.cancelPush = function(){
+//cancel-request
+  socket.on('cancel-request', function(data) {
+      $scope.cancelPush(true);
+      
+    });
+    $scope.cancelPush = function(noEmit){
       $scope.pushEnabled =false;
       $scope.timer.enabled=false;
       $scope.timer.current=0;
+      if(!noEmit){
       socket.emit('cancel', {
         type: 'requester',
-        name: $scope.email
+        name: 'bibin@gmail.com'
       });
-    }
+      }
+    };
 
     var timer;
+
     $scope.waitForAction = function(){
-      if($scope.timer.current==$scope.timer.max){
+      if($scope.timer.current==0){
         $timeout.cancel(timer);
+        $scope.cancelPush();
         return;
       }
-      $scope.timer.current++;
+      $scope.timer.current--;
       timer = $timeout($scope.waitForAction, 1000)
     }
 

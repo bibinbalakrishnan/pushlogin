@@ -14,9 +14,9 @@
 
                     <div class="progress-wrapper" ng-if="timer.enabled" ng-click="cancelPush()">
                         <div class="progress">
-                            {{timer.current}}
+                            {{timer.current}} secs
                         </div>
-                        <div round-progress max="timer.max" current="timer.current" clockwise="false" color="#1D3D86" rounded="true" class="text-center"></div>
+                        <div ng-click="cancel()" round-progress max="30" current="timer.current" clockwise="false" color="{{ (timer.current > 15) ? '#134C9E' : '#F7B700' }}" rounded="true" class="text-center"></div>
                     </div>
                     <label class="checkbox pull-left">
                         <input type="checkbox" value="remember-me">

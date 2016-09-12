@@ -2,7 +2,8 @@
 
 angular
   .module('app', [
-    'ngRoute'
+    'ngRoute',
+    'angular-svg-round-progressbar'
     
   ])
   .config(function ($routeProvider, $locationProvider) {

@@ -10,7 +10,7 @@ var _sessions = new (require('./sessions.js'))(io);
 
 app.use(bodyParser.json());
 
-server.listen(8000,function(){
+server.listen(process.env.PORT||8000,function(){
 	console.log('Listening on port 8000');
   _sessions.startTick();
 });

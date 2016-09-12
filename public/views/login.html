@@ -8,8 +8,8 @@
                 <img ng-if="isValidEmail() && !timer.enabled" ng-click="activatePush()" style="cursor: pointer"  class="push-img" src="images/push.png" alt="">
                 <form class="form-signin">
                     <input type="text" class="form-control" ng-model="email" placeholder="Email" required autofocus>
-                    <input type="password" class="form-control" ng-if="!pushEnabled" ng-model="password" placeholder="Password" required>
-                    <button class="btn btn-lg btn-primary btn-block" type="submit" ng-if="!pushEnabled">
+                    <input type="password" class="form-control" ng-show="!pushEnabled" ng-model="pass" placeholder="Password" required>
+                    <button class="btn btn-lg btn-primary btn-block" ng-click="login()"  ng-if="!pushEnabled">
                         Sign in</button>
 
                     <div class="progress-wrapper" ng-if="timer.enabled" ng-click="cancelPush()">

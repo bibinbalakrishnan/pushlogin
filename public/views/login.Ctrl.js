@@ -5,11 +5,11 @@
     .module('app')
     .controller('LoginCtrl', LoginCtrl);
 
-  LoginCtrl.$inject = ['$scope','socket','$timeout'];
+  LoginCtrl.$inject = ['$scope','socket','$location','$http'];
 
 
 
-  function LoginCtrl($scope,  socket, $timeout) {
+  function LoginCtrl($scope,socket,$location,$http) {
 
     $scope.timer ={max:30,enabled:false};
 
@@ -20,6 +20,16 @@
     $scope.isValidEmail =function() {
       return re.test($scope.email);
     };
+
+    $scope.login= function(){
+      console.log("Invoking login...")
+      var data = {username: $scope.email, password: $scope.pass};
+      $http.post("/api/login", data).then(function(res){
+        if(res.data && res.data.auth=="success"){
+          $location.path('/success');
+        }
+    });
+    }
 
     $scope.activatePush = function(){
       $scope.pushEnabled =true;
@@ -38,6 +48,11 @@
       if($scope.timer.current==0){
         $scope.cancelPush();
       }
+  });
+
+  socket.on('auth-success',function(data){
+      console.log(data.token);
+
   });
 
   socket.on('cancel-request', function(data) {

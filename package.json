@@ -4,17 +4,15 @@
   "description": "Login server and UI client",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "postinstall": "./node_modules/bower/bin/bower install"
   },
   "author": "Bibin",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.15.2",
+    "bower": "^1.7.9",
     "express": "^4.14.0",
     "gulp-nodemon": "^2.1.0",
     "socket.io": "^1.4.8"
-  },
-  "scripts": {
-    "postinstall": "./node_modules/bower/bin/bower install"
   }
 }

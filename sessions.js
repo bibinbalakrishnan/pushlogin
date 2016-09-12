@@ -2,7 +2,7 @@
 function Sessions(io){
     this.contexts =[];
     this.io = io;
-    //userid : {requester : {id: id, socket : socket}, activator :{id: id, socket: socket}, active: true, tick :20}
+    //userid : {data : data, requester : {id: id, socket : socket}, activator :{id: id, socket: socket}, active: true, tick :20}
 }
 
 Sessions.prototype.cancel = function(data,socket){
@@ -17,6 +17,17 @@ Sessions.prototype.cancel = function(data,socket){
   }  
 
 };
+
+Sessions.prototype.randomDetail = function(){
+    var date = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
+    var detail = (Math.floor(Math.random() * 120) + 1) + "SGD "+ date;
+    var checkOutData ={};
+    checkOutData.timeLeft =30;
+    checkOutData.merchant="Qoo10 Singapore";
+    checkOutData.detail = detail;
+    return checkOutData;
+};
+
 Sessions.prototype.register = function(data,socket){
     console.log('New '+data.type+' joined '+data.name);
     console.log(this.contexts);
@@ -25,13 +36,7 @@ Sessions.prototype.register = function(data,socket){
 	    if(this.contexts[data.name]){
 	    	 context = this.contexts[data.name];
 	    	if(context.requester && context.active){
-	    		//notify activator that requester joined
-              var data ={
-            timeLeft :30,
-            merchant: "Qoo10 Singapore",
-            detail: "35 SGD 12/08/2016"
-          };
-         socket.emit('activate-request',data);
+	       socket.emit('activate-request',context.data);
 	    	}
       } else {
          context ={};
@@ -45,16 +50,16 @@ Sessions.prototype.register = function(data,socket){
       if(this.contexts[data.name]){
          context = this.contexts[data.name];
          if(context.activator){
-                var data ={
-            timeLeft :30,
-            merchant: "Qoo10 Singapore",
-            detail: "35 SGD 12/08/2016"
-          };
-          this.io.to(context.activator.id).emit('activate-request', data);
-          //socket.emit('activate-request',data);
+          console.log('Activator exists already');
+          context.data = this.randomDetail();
+          console.log('Emitting activate-request to '+context.activator.id);
+          this.io.to(context.activator.id).emit('activate-request', context.data);
          }
       } else {
+         console.log('Building new context for requester');
          context ={};
+         context.data = this.randomDetail();
+         console.log(context.data);
          this.contexts[data.name] = context;
       }
       context.active = true;

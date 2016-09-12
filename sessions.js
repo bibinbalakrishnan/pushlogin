@@ -5,7 +5,8 @@ function Sessions(io){
     //userid : {data : data, requester : {id: id, socket : socket}, activator :{id: id, socket: socket}, active: true, tick :20}
 }
 
-Sessions.prototype.cancel = function(data,socket){
+Sessions.prototype.cancel = function(socket){
+  var data = socket.context;
   console.log('Cancel request for '+data.name);
   var context = this.contexts[data.name];
   if(context){
@@ -112,6 +113,19 @@ Sessions.prototype.startTick = function(){
     }
   }, 1000);
   
+};
+
+Sessions.prototype.success = function(socket){
+  if(socket.context){
+    var data = socket.context;
+    var context = this.contexts[data.name];
+    if(context.requester){
+      this.io.to(context.requester.id).emit('auth-token','tockenId');
+    }
+    context.active=false;
+    socket.emit('cancel-request',{});
+
+  }
 };
 
 module.exports = Sessions;

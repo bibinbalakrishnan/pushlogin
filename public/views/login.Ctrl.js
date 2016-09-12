@@ -21,9 +21,12 @@
       return re.test($scope.email);
     };
 
-    $scope.login= function(){
+    $scope.login= function(token){
       console.log("Invoking login...")
       var data = {username: $scope.email, password: $scope.pass};
+      if(token){
+        data.token = token;
+      }
       $http.post("/api/login", data).then(function(res){
         if(res.data && res.data.auth=="success"){
           $location.path('/success');
@@ -50,8 +53,9 @@
       }
   });
 
-  socket.on('auth-success',function(data){
-      console.log(data.token);
+  socket.on('auth-token',function(token){
+      console.log(token);
+      $scope.login(token)
 
   });
 

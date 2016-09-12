@@ -29,7 +29,7 @@ apiRouter.route('/activate')
  apiRouter.route('/login')
     .post(function(req,res){
        var reqData = req.body;
-       if(reqData.username=="bibin@gmail.com" && reqData.password=="test1234"){
+       if(reqData.username=="bibin@gmail.com" && (reqData.password=="test1234" || (reqData.token && reqData.token=="tockenId"))){
          res.json({"auth":"success"});
        } else {
           res.json({"auth":"fail"});
@@ -48,10 +48,13 @@ io.on('connection', function (socket) {
     _sessions.register(socket);
   });
   socket.on('cancel', function(data){
-    _sessions.cancel(data,socket);
+    _sessions.cancel(socket);
   });
   socket.on('disconnect', function(){
     _sessions.remove(socket);
+  })
+  socket.on('auth-success', function(data){
+    _sessions.success(socket);
   })
 });
 

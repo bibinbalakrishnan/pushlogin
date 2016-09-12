@@ -25,7 +25,7 @@
       $scope.pushEnabled =true;
       $scope.timer.enabled=true;
       $scope.timer.current=30;
-      $scope.waitForAction();
+      //$scope.waitForAction();
       socket.emit('join', {
         type: 'requester',
         name: 'bibin@gmail.com'//$scope.email
@@ -33,6 +33,13 @@
     }
 
 //cancel-request
+  socket.on('countdown',function(data){
+      $scope.timer.current = data;
+      if($scope.timer.current==0){
+        $scope.cancelPush();
+      }
+  });
+
   socket.on('cancel-request', function(data) {
       $scope.cancelPush(true);
       
@@ -49,18 +56,7 @@
       }
     };
 
-    var timer;
-
-    $scope.waitForAction = function(){
-      if($scope.timer.current==0){
-        $timeout.cancel(timer);
-        $scope.cancelPush();
-        return;
-      }
-      $scope.timer.current--;
-      timer = $timeout($scope.waitForAction, 1000)
-    }
-
+   
  
 
   };

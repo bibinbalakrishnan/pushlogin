@@ -8,13 +8,15 @@ function Sessions(io){
 Sessions.prototype.cancel = function(data,socket){
   console.log('Cancel request for '+data.name);
   var context = this.contexts[data.name];
-  context.active=false;
-  if(data.type=="activator" && context.requester){
-    this.io.to(context.requester.id).emit('cancel-request',{});
-  }
-  if(data.type=="requester" && context.activator){
-    this.io.to(context.activator.id).emit('cancel-request',{});
-  }  
+  if(context){
+    context.active=false;
+    if(data.type=="activator" && context.requester){
+      this.io.to(context.requester.id).emit('cancel-request',{});
+    }
+    if(data.type=="requester" && context.activator){
+      this.io.to(context.activator.id).emit('cancel-request',{});
+    }  
+ }
 
 };
 
@@ -28,9 +30,9 @@ Sessions.prototype.randomDetail = function(){
     return checkOutData;
 };
 
-Sessions.prototype.register = function(data,socket){
+Sessions.prototype.register = function(socket){
+    var data = socket.context;
     console.log('New '+data.type+' joined '+data.name);
-    console.log(this.contexts);
     if(data.type=='activator'){
       var context;
 	    if(this.contexts[data.name]){
@@ -59,27 +61,57 @@ Sessions.prototype.register = function(data,socket){
          console.log('Building new context for requester');
          context ={};
          context.data = this.randomDetail();
-         console.log(context.data);
          this.contexts[data.name] = context;
       }
       context.active = true;
+      context.tick=30;
       context.requester ={};
       context.requester.id = socket.id;
       //context.socket = socket;
 	}
     
   	
+console.log(this.contexts);
 
     
 };
 
-Sessions.prototype.remove = function(data){
-    console.log(data.type +' for '+ data.name +' cancelled');
+Sessions.prototype.remove = function(socket){
+  if(socket.context){
+    var data = socket.context;
+    console.log('Removing '+ data.type +' for '+ data.name);
+    var context = this.contexts[data.name];
+    if(context && context[data.type]){
+      delete context[data.type];
+      context.active = false;
+      console.log(this.contexts)
+    }
+  }
+    
 };
 
 
-Sessions.prototype.getTick = function(){
-
+Sessions.prototype.startTick = function(){
+  var contexts = this.contexts;
+  var io = this.io;
+  setInterval(function() {  
+    //console.log(contexts);
+    for(var ctxt in contexts){
+       var session = contexts[ctxt];
+       if(session.active && session.tick > 0){
+        session.tick--;
+        if(session.requester){
+          console.log('Emitting timer '+session.tick+' to requestor '+session.requester.id);
+          io.to(session.requester.id).emit('countdown', session.tick);
+        }
+        if(session.activator){
+           console.log('Emitting timer '+session.tick+' to activator '+session.activator.id)
+         io.to(session.activator.id).emit('countdown', session.tick); 
+        }
+      }
+    }
+  }, 1000);
+  
 };
 
 module.exports = Sessions;

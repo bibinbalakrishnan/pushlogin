@@ -9,6 +9,7 @@ var _sessions = new (require('./sessions.js'))(io);
 
 server.listen(8000,function(){
 	console.log('Listening on port 8000');
+  _sessions.startTick();
 });
 
 app.use(express.static(path.join(__dirname, "public")));
@@ -30,10 +31,14 @@ apiRouter.route('/history')
 io.on('connection', function (socket) {
   console.log('Detected a socket connection');
   socket.on('join', function(data){
-    _sessions.register(data,socket);
+     socket.context = data;
+    _sessions.register(socket);
   });
   socket.on('cancel', function(data){
     _sessions.cancel(data,socket);
+  });
+  socket.on('disconnect', function(){
+    _sessions.remove(socket);
   })
 });
 

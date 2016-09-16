@@ -36,6 +36,19 @@ apiRouter.route('/voice')
       res.type('text/xml');
       res.send(twiml.toString());
   });
+
+ apiRouter.route('/gathervoice')
+  .post(function(req,res){
+      var twiml = new twilio.TwimlResponse();
+      if (request.body.Digits && request.body.Digits="123456") {
+       twiml.say("You have been successfully authorized");
+      } else {
+       twiml.say("Invalid authorization code.Your request is rejected");
+      }
+      res.type('text/xml');
+      res.send(twiml.toString());   
+  }); 
+  
 apiRouter.route('/activate')
     .get(function(req,res){
     	res.json({"books":"book"});

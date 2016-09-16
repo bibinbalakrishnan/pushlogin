@@ -42,7 +42,7 @@ router.route('/request')
 exports.triggerCall = function(ivrInfo,callback){
 	console.log('Initiating call on '+ivrInfo.number);
 	if(twilioClient){
-	client.calls.create({ 
+	twilioClient.calls.create({ 
       to: ivrInfo.number,
       from: "+12018774298", 
       url: "https://pushlogin.herokuapp.com/ivr/request",           

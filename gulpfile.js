@@ -1,11 +1,10 @@
 var gulp=require('gulp'),nodemon=require('gulp-nodemon');
 
-
+//serve task
 gulp.task('serve', function () {
   nodemon({
     script: 'server.js'
   , ext: 'js html'
-  
   , env: { 'NODE_ENV': 'development' }
   })
 })

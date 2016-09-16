@@ -14,7 +14,10 @@ var twilioToken = process.env.twilio_token;
 
 console.log('Id: '+twilioId);
 console.log('Token: '+twilioToken);
+
+app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
+
 
 server.listen(process.env.PORT||8000,function(){
 	console.log('Listening on port 8000');
@@ -29,8 +32,9 @@ app.use('/api', apiRouter);
 
 apiRouter.route('/voice')
   .post(function(req,res){
+      console.log("Recieved api call /voice from twilio")
       var twiml = new twilio.TwimlResponse();
-      twiml.gather({ numDigits: 6 }, (gatherNode) => {
+      twiml.gather({ numDigits: 6 ,action: '/api/gathervoice', method: 'POST'}, (gatherNode) => {
         gatherNode.say({voice:'woman'},'Hello Bibin, A push login request to your checkout account has been initiated. To authorize enter your 6 digits secret code now.');
       });
       res.type('text/xml');
@@ -39,8 +43,9 @@ apiRouter.route('/voice')
 
  apiRouter.route('/gathervoice')
   .post(function(req,res){
+      console.log("Recieved api call /gathervoice from twilio");
       var twiml = new twilio.TwimlResponse();
-      if (request.body.Digits && request.body.Digits="123456") {
+      if (req.body.Digits && req.body.Digits=="123456") {
        twiml.say("You have been successfully authorized");
       } else {
        twiml.say("Invalid authorization code.Your request is rejected");
@@ -48,7 +53,7 @@ apiRouter.route('/voice')
       res.type('text/xml');
       res.send(twiml.toString());   
   }); 
-  
+
 apiRouter.route('/activate')
     .get(function(req,res){
     	res.json({"books":"book"});

@@ -7,7 +7,13 @@ var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 var _sessions = new (require('./sessions.js'))(io);
+var twilio = require('twilio');
 
+var twilioId = process.env.twilio_id; 
+var twilioToken = process.env.twilio_token;
+
+console.log('Id: '+twilioId);
+console.log('Token: '+twilioToken);
 app.use(bodyParser.json());
 
 server.listen(process.env.PORT||8000,function(){

@@ -27,6 +27,13 @@ var apiRouter = express.Router();
 
 app.use('/api', apiRouter);
 
+apiRouter.route('/voice')
+  .get(function(req,res){
+      var twiml = new twilio.TwimlResponse();
+      twiml.say({voice:'woman'}, 'ahoy hoy! Testing Twilio and node.js');
+      res.type('text/xml');
+      res.send(twiml.toString());
+  });
 apiRouter.route('/activate')
     .get(function(req,res){
     	res.json({"books":"book"});

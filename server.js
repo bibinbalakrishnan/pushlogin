@@ -28,9 +28,11 @@ var apiRouter = express.Router();
 app.use('/api', apiRouter);
 
 apiRouter.route('/voice')
-  .get(function(req,res){
+  .post(function(req,res){
       var twiml = new twilio.TwimlResponse();
-      twiml.say({voice:'woman'}, 'ahoy hoy! Testing Twilio and node.js');
+      twiml.gather({ numDigits: 6 }, (gatherNode) => {
+        gatherNode.say({voice:'woman'},'Hello Bibin, A push login request to your checkout account has been initiated. To authorize enter your 6 digits secret code now.');
+      });
       res.type('text/xml');
       res.send(twiml.toString());
   });

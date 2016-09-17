@@ -39,7 +39,7 @@ exports.router = function (Sessions) {
         .post(function (req, res) {
             console.log("Recieved api call /ivr/request from twilio")
             var twiml = new twilio.TwimlResponse();
-            twiml.gather({numDigits: 6, action: '/ivr/gather', method: 'POST'}, (gatherNode) = > {
+            twiml.gather({numDigits: 6, action: '/ivr/gather', method: 'POST'}, (gatherNode) => {
                 gatherNode.say('Hello Bibin, A push login request to your checkout account has been initiated. To authorize enter your 6 digits secret code now.');
         });
     res.type('text/xml');

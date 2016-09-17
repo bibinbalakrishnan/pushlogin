@@ -17,7 +17,7 @@ app.use(bodyParser.json());
 
 
 server.listen(process.env.PORT||8000,function(){
-	console.log('Listening on port 8000');
+	console.log('Server started..');
    var ivrInfo = {};
    ivrInfo.number ="+6584680421";
    ivrInfo.user="bibin@gmail.com";
@@ -34,7 +34,7 @@ server.listen(process.env.PORT||8000,function(){
 
 app.use(express.static(path.join(__dirname, "public")));
 app.use('/api', api.router);
-app.use('/ivr', ivr.router);
+app.use('/ivr', ivr.router(_sessions));
 
 
 

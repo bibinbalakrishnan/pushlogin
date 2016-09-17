@@ -1,6 +1,6 @@
 var exports = module.exports = {};
 var express = require('express');
-var router = express.Router();
+
 var twilio = require('twilio');
 
 var twilioId = process.env.twilio_id; 
@@ -12,8 +12,10 @@ if(process.env.NODE_ENV=="heroku"){
   console.log('Twilo Token: '+twilioToken);
   twilioClient = twilio(twilioId,twilioToken);
 }
+exports.router = function(Sessions){
+	var avrRouter = express.Router();
 
-router.route('/request')
+  avrRouter.route('/request')
   .post(function(req,res){
       console.log("Recieved api call /ivr/request from twilio")
       var twiml = new twilio.TwimlResponse();
@@ -24,7 +26,7 @@ router.route('/request')
       res.send(twiml.toString());
   });
 
- router.route('/gather')
+ avrRouter.route('/gather')
   .post(function(req,res){
       console.log("Recieved api call /ivr/gather from twilio");
       var twiml = new twilio.TwimlResponse();
@@ -37,7 +39,9 @@ router.route('/request')
       res.send(twiml.toString());   
   }); 
 
+  return avrRouter;
 
+}	
 
 exports.triggerCall = function(ivrInfo,callback){
 	console.log('Initiating call on '+ivrInfo.number);
@@ -52,5 +56,4 @@ exports.triggerCall = function(ivrInfo,callback){
 	} else {
 		  callback('Twilio client not available in this environment');
 	}
-}    
-exports.router = router;
+};    

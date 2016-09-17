@@ -1,12 +1,12 @@
-(function() {
-  'use strict';
+(function () {
+    'use strict';
 
-  angular
-    .module('app')
-    .controller('SuccessCtrl', SuccessCtrl);
+    angular
+        .module('app')
+        .controller('SuccessCtrl', SuccessCtrl);
 
-  SuccessCtrl.$inject = ['$scope', 'socket'];
+    SuccessCtrl.$inject = ['$scope', 'socket'];
 
-  function SuccessCtrl($scope, socket) {
-  };
+    function SuccessCtrl($scope, socket) {
+    };
 })();

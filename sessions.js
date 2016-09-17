@@ -1,10 +1,38 @@
-function Sessions(io) {
+var _ = require('lodash');
+var Sessions = function(io) {
     var events = require('events');
     this.contexts = [];
     this.io = io;
+    this.users =[];
     this.emitter = new events.EventEmitter();
-    //userid : {data : data, requester : {id: id, socket : socket}, activator :{id: id, socket: socket}, active: true, tick :20}
 }
+
+Sessions.prototype.registerUser = function(user){
+    console.log('Registering user '+user.username);
+    this.users[user.username] = user;
+    console.log(this.users);
+    return user.username;
+};
+
+Sessions.prototype.findUserByPhone = function(phone){
+     var users = _.filter(this.users, function(user) { 
+        return user.phone == phone; 
+     });
+     return users[0];
+};
+
+Sessions.prototype.removeUser = function(username){
+    if(this.users[username]){
+        delete this.users[username];
+    }
+};
+
+Sessions.prototype.updateIVRState = function(user,state){
+    var context = this.contexts[user.username];
+    if(context && context.requester){
+        this.io.to(context.requester.id).emit('ivr', state);
+    }
+};
 
 Sessions.prototype.cancel = function (socket) {
     var data = socket.context;
@@ -39,7 +67,7 @@ Sessions.prototype.register = function (socket) {
         var context;
         if (this.contexts[data.name]) {
             context = this.contexts[data.name];
-            if (context.requester && context.active) {
+            if (context.requester && context.active && !context.ivrMode) {
                 socket.emit('activate-request', context.data);
             }
         } else {
@@ -51,6 +79,11 @@ Sessions.prototype.register = function (socket) {
         //context.socket = socket;
     } else if (data.type == 'requester') {
         var context;
+        if(!this.users[data.name]){
+            console.log('User does not exist, cancelling request');
+            socket.emit('cancel-request',{});
+            return;
+        }
         if (this.contexts[data.name]) {
             context = this.contexts[data.name];
             if (context.activator) {
@@ -66,6 +99,7 @@ Sessions.prototype.register = function (socket) {
             this.contexts[data.name] = context;
         }
         context.active = true;
+        context.user = this.users[data.name];
         context.tick = 30;
         context.requester = {};
         context.requester.id = socket.id;
@@ -95,7 +129,7 @@ Sessions.prototype.remove = function (socket) {
 
 Sessions.prototype.getListener = function () {
     return this.emitter;
-}
+};
 
 Sessions.prototype.startTick = function () {
     var contexts = this.contexts;
@@ -105,14 +139,18 @@ Sessions.prototype.startTick = function () {
         //console.log(contexts);
         for (var ctxt in contexts) {
             var session = contexts[ctxt];
-            if (session.active && session.tick > 0) {
+            if (session.active && session.tick > 0 && !session.ivrMode) {
                 session.tick--;
-                if (/*process.env.NODE_ENV && process.env.NODE_ENV=="heroku" &&*/ session.tick == 15 && !session.activator) {
-                    console.log('Activator not available at 15th tick');
-                    var ivrInfo = {};
-                    ivrInfo.number = "+6584680421";
-                    ivrInfo.user = "bibin@gmail.com";
-                    listener.emit("start.ivr", ivrInfo);
+                if (session.user.enableIVR && session.tick == session.user.ivrwaitTime && !session.activator) {
+                    console.log('Activator not available at tick :'+session.tick);
+                    session.ivrMode=true;
+                    io.to(session.requester.id).emit('ivr', 'started');
+                    setImmediate(function(){
+                        var ivrInfo = {};
+                        ivrInfo.user = session.user;
+                        listener.emit("start.ivr", ivrInfo);    
+                    });
+                    
                 }
                 if (session.requester) {
                     console.log('Emitting timer ' + session.tick + ' to requestor ' + session.requester.id);
@@ -128,12 +166,21 @@ Sessions.prototype.startTick = function () {
 
 };
 
+Sessions.prototype.IVRSuccess = function (user) {
+        var context = this.contexts[user.username];
+        if (context && context.requester) {
+            this.io.to(context.requester.id).emit('auth-token', 'tokenId');
+            context.active = false;
+            context.ivrMode=false;
+        }
+};
+
 Sessions.prototype.success = function (socket) {
     if (socket.context) {
         var data = socket.context;
         var context = this.contexts[data.name];
         if (context.requester) {
-            this.io.to(context.requester.id).emit('auth-token', 'tockenId');
+            this.io.to(context.requester.id).emit('auth-token', 'tokenId');
         }
         context.active = false;
         socket.emit('cancel-request', {});
@@ -141,5 +188,7 @@ Sessions.prototype.success = function (socket) {
     }
 };
 
-module.exports = Sessions;
+module.exports = function(io){
+    return new Sessions(io);
+}
  

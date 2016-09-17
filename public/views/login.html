@@ -15,7 +15,7 @@
                     <button class="btn btn-lg btn-primary btn-block" ng-click="login()" ng-if="!pushEnabled">
                         Sign in
                     </button>
-
+                    <div class="progress-wrapper" style="text-align:center;font-weight:bold;color:#134C9E" ng-if="pushEnabled && ivrMode">{{ivrStatus}}</div>
                     <div class="progress-wrapper" ng-if="timer.enabled" ng-click="cancelPush()">
                         <div class="progress">
                             {{timer.current}} secs

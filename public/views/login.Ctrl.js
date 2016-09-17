@@ -40,7 +40,7 @@
             //$scope.waitForAction();
             socket.emit('join', {
                 type: 'requester',
-                name: 'bibin@gmail.com'//$scope.email
+                name: $scope.email
             });
         }
 
@@ -49,6 +49,21 @@
             $scope.timer.current = data;
             if ($scope.timer.current == 0) {
                 $scope.cancelPush();
+            }
+        });
+
+        socket.on('ivr',function(mode){
+            if($scope.pushEnabled==true){
+                $scope.timer.enabled = false;
+                $scope.timer.current = 0;
+                $scope.ivrMode=true;
+                if(mode=="started"){
+                     $scope.ivrStatus="IVR in progress..";
+                } else if(mode=="validate"){
+                    $scope.ivrStatus="Validating IVR response..";
+                } else if(mode=="error"){
+                    $scope.cancelPush();
+                }
             }
         });
 
@@ -64,12 +79,13 @@
         });
         $scope.cancelPush = function (noEmit) {
             $scope.pushEnabled = false;
+            $scope.ivrMode=false;
             $scope.timer.enabled = false;
             $scope.timer.current = 0;
             if (!noEmit) {
                 socket.emit('cancel', {
                     type: 'requester',
-                    name: 'bibin@gmail.com'
+                    name: $scope.email
                 });
             }
         };

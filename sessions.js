@@ -150,6 +150,7 @@ Sessions.prototype.startTick = function () {
                         ivrInfo.user = session.user;
                         listener.emit("start.ivr", ivrInfo);    
                     });
+                    continue;
                     
                 }
                 if (session.requester) {

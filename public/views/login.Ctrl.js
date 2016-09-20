@@ -23,12 +23,14 @@
         $scope.login = function (token) {
             console.log("Invoking login...")
             var data = {username: $scope.email, password: $scope.pass};
+            var push = false ;
             if (token) {
                 data.token = token;
+                push = true ;
             }
             $http.post("/api/login", data).then(function (res) {
                 if (res.data && res.data.auth == "success") {
-                    $location.path('/success');
+                     $location.path('/success').search({push:push });
                 }
             });
         }

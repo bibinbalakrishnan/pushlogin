@@ -5,7 +5,8 @@ module.exports = function(Sessions){
     router.route('/login')
     .post(function (req, res) {
         var reqData = req.body;
-        if (reqData.username == "bibin@gmail.com" && (reqData.password == "test1234" || (reqData.token && reqData.token == "tokenId"))) {
+        var user = Sessions.findUserByName(reqData.username);
+        if (reqData.username == user.username && (reqData.password == user.password || (reqData.token && reqData.token == "tokenId"))) {
             res.json({"auth": "success"});
         } else {
             res.json({"auth": "fail"});
@@ -19,12 +20,17 @@ module.exports = function(Sessions){
         res.json({"username": req.body.username});
     })
     .get(function(req,res){
-        var allUsers = Sessions.getUsers();
-        var resp=[];
-        for(user in allUsers){
-            resp.push(allUsers[user]);
+        if(req.query.name){
+            console.log(req.query.name);
+            res.json(Sessions.findUserByName(req.query.name));
+        } else {
+            var allUsers = Sessions.getUsers();
+            var resp=[];
+            for(user in allUsers){
+                resp.push(allUsers[user]);
+            }
+            res.json(resp);
         }
-        res.json(resp);
     });
 
 

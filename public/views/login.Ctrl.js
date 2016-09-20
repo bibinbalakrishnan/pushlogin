@@ -68,7 +68,7 @@
         });
 
         socket.on('auth-token', function (token) {
-            console.log(token);
+            console.log('Recieved auth-token '+token);
             $scope.login(token)
 
         });

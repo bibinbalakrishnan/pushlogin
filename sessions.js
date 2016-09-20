@@ -20,6 +20,11 @@ Sessions.prototype.getUsers = function(){
     return this.users;
 };
 
+Sessions.prototype.findUserByName = function(uName){
+    console.log('Finding user by id');
+    return this.users[uName] || {};
+};
+
 Sessions.prototype.findUserByPhone = function(phone){
     console.log('Finding user by phone');
     for(username in this.users){
@@ -186,6 +191,7 @@ Sessions.prototype.startTick = function () {
 Sessions.prototype.IVRSuccess = function (user) {
         var context = this.contexts[user.username];
         if (context && context.requester) {
+            console.log('Emitting auth-token on IVR success for '+user.username);
             this.io.to(context.requester.id).emit('auth-token', 'tokenId');
             context.active = false;
             context.ivrMode=false;

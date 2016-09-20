@@ -41,7 +41,7 @@ module.exports = function (Sessions) {
 
     avrRouter.route('/request')
         .post(function (req, res) {
-            console.log("Recieved api call /ivr/request from twilio")
+            console.log("Recieved api call /ivr/request from  "+req.body.Called);
             var user = Sessions.findUserByPhone(req.body.Called);
             Sessions.updateIVRState(user,'validate');
             var twiml = new twilio.TwimlResponse();

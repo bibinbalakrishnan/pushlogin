@@ -14,6 +14,16 @@ app.use(bodyParser.json());
 
 server.listen(process.env.PORT || 8000, function () {
     console.log('Server started..');
+    //create a user -- remove this later
+   /* var user = {};
+    user.username="bibin@gmail.com";
+    user.password="test1234";
+    user.name="Bibin";
+    user.enableIVR=true;
+    user.ivrwaitTime=15;
+    user.phone="+6584680421";
+    user.key="123456";
+    _sessions.registerUser(user);*/
     _sessions.startTick();
 });
 

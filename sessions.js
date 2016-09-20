@@ -9,6 +9,7 @@ var Sessions = function(io) {
 
 Sessions.prototype.registerUser = function(user){
     console.log('Registering user '+user.username);
+    console.log('New User details '+user);
     this.users[user.username] = user;
     console.log(this.users);
     return user.username;
@@ -20,10 +21,17 @@ Sessions.prototype.getUsers = function(){
 };
 
 Sessions.prototype.findUserByPhone = function(phone){
-     var users = _.filter(this.users, function(user) { 
-        return user.phone == phone; 
-     });
-     return users[0];
+    console.log('Finding user by phone');
+    for(username in this.users){
+        var user = this.users[username];
+        if(user.phone==phone){
+            console.log('Found user..');
+            console.log(user);
+            return user;
+        }
+    }
+    return {};
+    
 };
 
 Sessions.prototype.removeUser = function(username){
@@ -33,6 +41,9 @@ Sessions.prototype.removeUser = function(username){
 };
 
 Sessions.prototype.updateIVRState = function(user,state){
+    if(user){
+        console.log('Upating IVR state for '+user.name +' to '+state);
+    }
     var context = this.contexts[user.username];
     if(context && context.requester){
         this.io.to(context.requester.id).emit('ivr', state);

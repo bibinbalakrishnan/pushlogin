@@ -14,6 +14,11 @@ Sessions.prototype.registerUser = function(user){
     return user.username;
 };
 
+Sessions.prototype.getUsers = function(){
+    console.log('Retrieving all users..');
+    return this.users;
+};
+
 Sessions.prototype.findUserByPhone = function(phone){
      var users = _.filter(this.users, function(user) { 
         return user.phone == phone; 

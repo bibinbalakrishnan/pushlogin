@@ -46,7 +46,7 @@ module.exports = function (Sessions) {
             Sessions.updateIVRState(user,'validate');
             var twiml = new twilio.TwimlResponse();
             twiml.gather({numDigits: 6, action: '/ivr/gather', method: 'POST'}, (gatherNode) => {
-                gatherNode.say('Hello '+user+', A push login request to your checkout account has been initiated. To authorize enter your 6 digits secret code now.');
+                gatherNode.say('Hello '+user.name+', A push login request to your checkout account has been initiated. To authorize enter your 6 digits secret code now.');
         });
     res.type('text/xml');
     res.send(twiml.toString());

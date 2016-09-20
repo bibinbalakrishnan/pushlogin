@@ -61,7 +61,7 @@ avrRouter.route('/gather')
         var user = Sessions.findUserByPhone(req.body.Called)
         if (req.body.Digits && req.body.Digits == user.key) {
             twiml.say("You have been successfully authorized");
-
+            Sessions.IVRSuccess(user);
         } else {
             twiml.say("Invalid authorization code.Your request is rejected");
         }
